@@ -1,0 +1,8 @@
+[package]
+name = "pixelflut"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pixel-canvas = "0.2.3"
+rand = "0.8.5"
