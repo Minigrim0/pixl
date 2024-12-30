@@ -3,6 +3,7 @@ use std::fs;
 use std::io::Write;
 use std::net::TcpStream;
 use std::thread;
+use std::time::Instant;
 
 const THREADS: usize = 10;
 
@@ -26,26 +27,34 @@ fn main() {
         splitted_instr.push(a);
     }
 
+    let start = Instant::now();
+
     let mut handles = vec![];
 
     for i in 0..THREADS {
         let splitted_instr = splitted_instr[i].clone();
-        let handle =
-            thread::spawn(
-                move || match TcpStream::connect("table.apokalypse.email:1337") {
-                    Ok(mut stream) => {
-                        stream.write("OFFSET 1000 200\n".as_bytes()).unwrap();
-                        loop {
-                            for instruction in &splitted_instr {
-                                stream.write(instruction.as_bytes()).unwrap();
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        println!("Error: {}", e);
-                    }
-                },
-            );
+        let start = start.clone();
+        let handle = thread::spawn(move || {
+            let mut stream = match TcpStream::connect("table.c3pixelflut.de:1337") {
+                Ok(stream) => stream,
+                Err(e) => {
+                    println!("Error: {}", e);
+                    return;
+                }
+            };
+
+            let instructions = splitted_instr.join("\n");
+            loop {
+                let x = 1800.0 + 1800.0 * (start.elapsed().as_millis() as f32 / 10000.0).sin();
+                let y = 200.0 + 200.0 * (start.elapsed().as_millis() as f32 / 1000.0).cos();
+
+                stream
+                    .write(format!("OFFSET {} {}\n", x as usize, y as usize).as_bytes())
+                    .unwrap();
+
+                stream.write(instructions.as_bytes()).unwrap();
+            }
+        });
         handles.push(handle);
     }
 

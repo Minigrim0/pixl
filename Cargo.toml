@@ -4,5 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-pixel-canvas = "0.2.3"
+ndarray = "0.16.1"
 rand = "0.8.5"
+threadpool = "1.8.1"
+video-rs = { version = "0.10.3", features = ["ndarray"] }
+
+[features]
+report = []

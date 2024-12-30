@@ -1,1 +1,6 @@
 /target
+.venv
+images/
+videos/
+out.txt
+bin/
